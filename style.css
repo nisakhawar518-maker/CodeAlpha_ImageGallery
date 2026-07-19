@@ -1,0 +1,909 @@
+/* Prism — Image Gallery (production-quality, no frameworks)
+   - CSS Grid responsive thumbnails
+   - Modern hover effects (lift/zoom/overlay)
+   - Accessible contrast & semantic layout
+*/
+
+:root{
+  --bg: #f6f7fb;
+  --surface: #ffffff;
+  --text: #0f172a;           /* slate-900 */
+  --muted: #475569;          /* slate-600 */
+  --accent: #0b1220;         /* near-black */
+  --accent-2: #1f2937;       /* slate-800 */
+  --ring: rgba(11, 18, 32, .22);
+
+  --radius-lg: 18px;
+  --radius-md: 14px;
+
+  --shadow-sm: 0 10px 30px rgba(15, 23, 42, .06);
+  --shadow-md: 0 16px 44px rgba(15, 23, 42, .12);
+
+  --container: 1120px;
+}
+
+*{ box-sizing: border-box; }
+
+html, body{ height: 100%; }
+
+body{
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(11,18,32,.06), transparent 60%),
+    radial-gradient(900px 400px at 100% 0%, rgba(11,18,32,.05), transparent 55%),
+    var(--bg);
+  line-height: 1.5;
+}
+
+.container{
+  width: min(var(--container), calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.skip-link{
+  position: absolute;
+  left: -999px;
+  top: 10px;
+  padding: .75rem 1rem;
+  background: var(--accent);
+  color: white;
+  border-radius: 999px;
+  text-decoration: none;
+  z-index: 999;
+}
+.skip-link:focus{ left: 1rem; outline: 3px solid var(--ring); }
+
+.site-header{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(10px);
+  background: rgba(246, 247, 251, .75);
+  border-bottom: 1px solid rgba(15, 23, 42, .06);
+  transition: box-shadow 260ms ease, background-color 260ms ease, transform 260ms ease;
+}
+
+.site-header.is-scrolled{
+  box-shadow: 0 10px 40px rgba(15,23,42,.06);
+  background: rgba(246, 247, 251, .9);
+  transform: translateY(0);
+}
+
+.header-inner{
+  padding: 1.1rem 0;
+}
+
+.brand{
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  /* Remove default browser link styling for the logo and set explicit brand color */
+  text-decoration: none;
+  color: var(--accent);
+}
+
+/* Ensure keyboard focus is clearly visible on the brand link for accessibility */
+.brand:focus-visible{
+  outline: 3px solid var(--ring);
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+.brand-mark{
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, rgba(11,18,32,.08), rgba(11,18,32,.02));
+  border: 1px solid rgba(15, 23, 42, .12);
+  color: var(--accent);
+  font-size: 1.3rem;
+  box-shadow: 0 10px 30px rgba(15,23,42,.06);
+}
+
+.brand-title{
+  margin: 0;
+  font-family: "DM Serif Display", ui-serif, Georgia, serif;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.45rem, 2.1vw, 2rem);
+  line-height: 1.1;
+  /* Force solid, dark brand text color (prevents default link color/underline) */
+  color: var(--accent-2);
+}
+
+.brand-tagline{
+  margin: .15rem 0 0;
+  font-size: clamp(.9rem, 1.2vw, 1rem);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.site-main{
+  padding: 1.4rem 0 3.25rem;
+}
+
+html{ scroll-behavior: smooth; }
+
+/* Screen-reader only text */
+.sr-only{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
+
+/* Header layout additions */
+.header-flex{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1.25rem;
+}
+
+.site-nav{
+  display:flex;
+  align-items:center;
+  gap:.95rem;
+}
+
+.nav-link{
+  text-decoration:none;
+  color: var(--accent);
+  font-weight: 800;
+  padding: .55rem .75rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.nav-link:hover{
+  background: rgba(255,255,255,.65);
+  border-color: rgba(15, 23, 42, .14);
+  transform: translateY(-1px);
+}
+
+.nav-toggle{
+  display:none;
+  appearance:none;
+  border:1px solid rgba(15, 23, 42, .14);
+  background: rgba(255,255,255,.65);
+  color: var(--accent);
+  width:44px;
+  height:44px;
+  border-radius: 14px;
+  cursor:pointer;
+  transition: transform 200ms ease, background-color 200ms ease;
+}
+
+.nav-toggle:hover{ transform: translateY(-1px); background: rgba(255,255,255,.9); }
+
+.mobile-nav{
+  display:none;
+  margin-top: .8rem;
+  padding: .75rem;
+  border-radius: 18px;
+  border: 1px solid rgba(15,23,42,.08);
+  background: rgba(255,255,255,.60);
+  backdrop-filter: blur(12px);
+}
+
+.mobile-nav[aria-hidden="false"]{ display:flex; flex-direction:column; gap:.35rem; }
+
+/* Premium hero */
+.prism-hero{
+  position: relative;
+  padding: 1.2rem 0 2.4rem;
+}
+
+.prism-hero__inner{
+  display:grid;
+  /* Premium split: larger media column on the left (~60%) */
+  grid-template-columns: 60% 40%;
+  gap: 1.6rem;
+  align-items: stretch;
+}
+
+.prism-hero__media{
+  border-radius: 22px;
+  background: rgba(255,255,255,.6);
+  border: 1px solid rgba(15,23,42,.08);
+  box-shadow: 0 28px 90px rgba(15,23,42,.16);
+  overflow:hidden;
+}
+
+.prism-hero__figure{
+  margin:0;
+  width:100%;
+  height:100%;
+}
+
+.prism-hero__img{
+  display:block;
+  width:100%;
+  height: 100%;
+  min-height: 420px;
+  object-fit: cover;
+  transform: scale(1);
+  transition: opacity 260ms ease, transform 520ms cubic-bezier(.2,.8,.2,1), filter 520ms ease;
+}
+
+/* JS toggles this class directly on the image element for a smooth fade/scale swap */
+.prism-hero__img.is-transitioning{
+  opacity: .18;
+  transform: scale(1.02);
+}
+
+/* Backwards-compatible selector in case a container variant is used */
+.prism-hero__media.is-transitioning .prism-hero__img{
+  opacity:.2;
+}
+
+.prism-hero__content{
+  padding: 1.2rem 0.4rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap: 1rem;
+}
+
+.prism-hero__eyebrow{
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: rgba(15,23,42,.65);
+  font-size: .78rem;
+}
+
+.prism-hero__title{
+  font-family: "DM Serif Display", ui-serif, Georgia, serif;
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  letter-spacing: -0.02em;
+  margin:0;
+  line-height: 1.05;
+}
+
+.prism-hero__desc{
+  margin:0;
+  color: var(--muted);
+  font-weight: 650;
+  max-width: 46ch;
+}
+
+.prism-hero__search{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+  padding: .55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(15,23,42,.12);
+  background: rgba(255,255,255,.70);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+.prism-search{
+  border:none;
+  outline:none;
+  background: transparent;
+  width: 100%;
+  padding: .3rem .6rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.prism-search::placeholder{ color: rgba(71,85,105,.75); font-weight: 700; }
+
+.prism-search__btn{
+  appearance:none;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(15,23,42,.14);
+  background: rgba(255,255,255,.85);
+  color: var(--accent);
+  font-size: 1.3rem;
+  cursor:pointer;
+  transition: transform 200ms ease, background-color 200ms ease, border-color 200ms ease;
+}
+
+.prism-search__btn:hover{ transform: translateY(-1px); background: #fff; border-color: rgba(15,23,42,.24); }
+
+.prism-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  border-radius: 999px;
+  padding: .95rem 1.15rem;
+  font-weight: 900;
+  border: 1px solid transparent;
+  transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease, border-color 220ms ease;
+}
+
+.prism-btn--primary{
+  color:#fff;
+  background: linear-gradient(135deg, #0b1220, #1f2a44);
+  box-shadow: 0 18px 60px rgba(11,18,32,.26);
+}
+
+.prism-btn--primary:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 22px 70px rgba(11,18,32,.33);
+}
+
+.prism-stats{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .7rem;
+  margin-top: .4rem;
+}
+
+.prism-stat{
+  margin:0;
+  padding: .95rem .95rem;
+  border-radius: 18px;
+  border: 1px solid rgba(15,23,42,.08);
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+}
+
+.prism-stat__label{ margin:0; color: rgba(71,85,105,.85); font-weight: 800; font-size: .82rem; }
+.prism-stat__value{ margin:.35rem 0 0; font-weight: 950; font-size: 1.1rem; letter-spacing: -0.01em; }
+
+.prism-about{ padding: 0 0 2.2rem; }
+.prism-about__inner{
+  border-radius: 22px;
+  border: 1px solid rgba(15,23,42,.08);
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  padding: 1.3rem 1.25rem;
+}
+.prism-about__title{ margin:0; font-family: "DM Serif Display", ui-serif, Georgia, serif; font-size: 1.35rem; }
+.prism-about__text{ margin:.6rem 0 0; color: var(--muted); font-weight: 650; }
+
+/* Scroll reveal (CSS-driven) */
+.reveal{
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.is-visible.reveal{
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 650ms ease, transform 650ms cubic-bezier(.2,.8,.2,1);
+}
+
+/* Hero/image fade animation class used by JS */
+
+/* Responsive */
+@media (max-width: 980px){
+  .prism-hero__inner{ grid-template-columns: 1fr; }
+  .prism-hero__img{ min-height: 320px; }
+  .prism-stats{ grid-template-columns: 1fr; }
+  .prism-hero__content{ padding: 0.35rem 0; }
+  .site-nav{ display:none; }
+  .nav-toggle{ display:inline-grid; place-items:center; }
+}
+
+@media (max-width: 520px){
+  .prism-hero{ padding: 1rem 0 2rem; }
+  .prism-hero__media{ border-radius: 18px; }
+  .prism-hero__content{ gap: .9rem; }
+  .nav-toggle{ width: 42px; height:42px; border-radius: 14px; }
+}
+
+
+.gallery-header{
+  padding: 1.1rem 0 1.6rem;
+}
+
+.gallery-title{
+  margin: 0;
+  font-size: clamp(1.15rem, 2vw, 1.6rem);
+  letter-spacing: -0.01em;
+}
+
+.gallery-subtitle{
+  margin: .6rem 0 0;
+  color: var(--muted);
+  max-width: 64ch;
+}
+
+/* Responsive thumbnail grid */
+.thumb-grid{
+  display: grid;
+  gap: 1rem;
+
+  /* auto-fit keeps it responsive across screen sizes */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+@media (max-width: 520px){
+  .thumb-grid{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+}
+
+.thumb-card{
+  border-radius: var(--radius-md);
+  background: transparent;
+}
+
+/* New-card reveal + stagger support: cards appended with .is-new will animate in when .is-revealed is added */
+.thumb-card.is-new{
+  opacity: 0;
+  transform: translateY(14px);
+}
+.thumb-card.is-new.is-revealed{
+  opacity: 1;
+  transform: translateY(0) scale(1.03);
+  transition: opacity 360ms ease, transform 360ms cubic-bezier(.2,.8,.2,1), box-shadow 360ms ease;
+  /* More pronounced shadow on reveal for premium feel */
+  box-shadow: 0 30px 100px rgba(15,23,42,.22);
+  will-change: transform, opacity, box-shadow;
+}
+
+.thumb-figure{
+  margin: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(15, 23, 42, .08);
+  position: relative;
+
+  /* Smooth hover baseline */
+  transition:
+    transform 250ms ease,
+    box-shadow 250ms ease,
+    border-color 250ms ease;
+}
+
+/* Skeleton shimmer shown while dynamic images load */
+.thumb-skeleton{
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.06) 40%, rgba(255,255,255,0.04) 80%);
+  z-index: 2;
+  will-change: background-position, opacity;
+  animation: prism-shimmer 900ms linear infinite;
+}
+
+@keyframes prism-shimmer{
+  0%{ background-position: -150% 0; }
+  100%{ background-position: 150% 0; }
+}
+
+/* Ensure images fade in when ready */
+.thumb-img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+
+  transform: scale(1);
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1), filter 360ms ease, opacity 220ms ease;
+  filter: saturate(1.02) contrast(1.02);
+  opacity: 1;
+}
+
+.thumb-img[data-loading="true"]{
+  opacity: 0;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .thumb-card.is-new.is-revealed,
+  .thumb-card.is-new,
+  .thumb-figure,
+  .thumb-img,
+  .thumb-overlay{
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+.thumb-img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+
+  transform: scale(1);
+  transition: transform 360ms cubic-bezier(.2,.8,.2,1), filter 360ms ease, opacity 220ms ease;
+  filter: saturate(1.02) contrast(1.02);
+}
+
+.thumb-overlay{
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: end start;
+  padding: 1rem;
+
+  background: linear-gradient(180deg, rgba(11,18,32,0) 40%, rgba(11,18,32,.74) 100%);
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.thumb-label{
+  font-size: .95rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.18);
+  padding: .45rem .6rem;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+
+/* Hover interactions */
+.thumb-card:hover .thumb-figure,
+.thumb-card:focus-within .thumb-figure{
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(11,18,32,.18);
+}
+
+.thumb-card:hover .thumb-img,
+.thumb-card:focus-within .thumb-img{
+  transform: scale(1.04);
+  filter: saturate(1.08) contrast(1.06);
+}
+
+.thumb-card:hover .thumb-overlay,
+.thumb-card:focus-within .thumb-overlay{
+  opacity: 1;
+}
+
+/* Footer */
+.site-footer{
+  padding: 1.4rem 0 2rem;
+  border-top: 1px solid rgba(15, 23, 42, .06);
+  background: rgba(246, 247, 251, .55);
+}
+
+.footer-inner{ display: flex; justify-content: center; }
+
+.footer-text{
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Loading / error status (NEW) */
+#prism-loading[hidden],
+#prism-error[hidden] {
+  display: none !important;
+}
+
+/* Load more button */
+.prism-loadmore-wrap{
+  display: flex;
+  justify-content: center;
+  padding: 1.25rem 0 0.6rem;
+}
+
+.prism-loadmore{
+  appearance: none;
+  border: 1px solid rgba(15, 23, 42, .14);
+  background: rgba(255,255,255,.75);
+  color: var(--accent);
+  padding: .8rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease,
+    opacity 200ms ease;
+}
+
+.prism-loadmore:hover{
+  transform: translateY(-1px);
+  border-color: rgba(11, 18, 32, .30);
+}
+
+.prism-loadmore:disabled{
+  cursor: progress;
+  opacity: .7;
+  transform: none;
+}
+
+
+.prism-status{
+
+  grid-column: 1 / -1;
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px dashed rgba(255,255,255,.18);
+  color: var(--muted);
+  background: rgba(255,255,255,.04);
+  display: grid;
+  place-items: center;
+  gap: .65rem;
+}
+
+.prism-status--error{
+  color: #7c1d1d;
+  background: rgba(220,38,38,.08);
+  border-color: rgba(220,38,38,.25);
+}
+
+.prism-spinner{
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: 3px solid rgba(15, 23, 42, .15);
+  border-top-color: rgba(11, 18, 32, .8);
+  animation: prism-spin 800ms linear infinite;
+}
+
+@keyframes prism-spin{
+  to{ transform: rotate(360deg); }
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce){
+  .thumb-figure,
+  .thumb-img,
+  .thumb-overlay{
+    transition: none !important;
+  }
+
+
+  .prism-spinner{ animation: none !important; }
+}
+
+
+/* -----------------------------
+   Category filters (NEW)
+   - Matches existing palette and accent color
+   - Uses smooth transitions
+----------------------------- */
+.prism-filters{
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  padding: .2rem 0 1.2rem;
+}
+
+.prism-filter{
+  appearance: none;
+  border: 1px solid rgba(15, 23, 42, .14);
+  background: rgba(255,255,255,.65);
+  color: var(--accent);
+  padding: .55rem .85rem;
+  border-radius: 999px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease,
+    opacity 200ms ease;
+}
+
+.prism-filter:hover{
+  transform: translateY(-1px);
+  border-color: rgba(11, 18, 32, .30);
+}
+
+.prism-filter[aria-pressed="true"]{
+  background: var(--accent);
+
+  border-color: rgba(11, 18, 32, .6);
+  color: #fff;
+}
+
+/* Load More button (NEW) */
+.prism-loadmore-wrap{
+  padding: 1.2rem 0 0;
+  display: flex;
+  justify-content: center;
+}
+
+.prism-loadmore{
+  appearance: none;
+  border: 1px solid rgba(15, 23, 42, .18);
+  background: rgba(255,255,255,.7);
+  color: var(--accent);
+  padding: .8rem 1.2rem;
+  border-radius: 999px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 200ms ease, background-color 200ms ease, border-color 200ms ease, opacity 200ms ease;
+}
+
+.prism-loadmore:hover{
+  transform: translateY(-1px);
+  border-color: rgba(11, 18, 32, .35);
+  background: rgba(255,255,255,.9);
+}
+
+.prism-loadmore[disabled]{
+  cursor: not-allowed;
+  opacity: .6;
+  transform: none;
+}
+
+/* -----------------------------
+   Lightbox (NEW)
+
+   - Full-screen modal with dark overlay
+   - Responsive and keyboard-friendly
+----------------------------- */
+.prism-lightbox{
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+/* Overlay (rgba(0,0,0,0.9) as requested) */
+.prism-lightbox__overlay{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+}
+
+.prism-lightbox__panel{
+  position: relative;
+  width: min(1040px, calc(100% - 2rem));
+  max-height: min(84vh, 860px);
+  display: grid;
+  place-items: center;
+  padding: 1.1rem;
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow: 0 25px 90px rgba(0,0,0,.55);
+
+  transform: translateY(6px) scale(.99);
+  transition:
+    transform 220ms ease,
+    opacity 220ms ease;
+}
+
+.prism-lightbox[aria-hidden="false"]{
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.prism-lightbox[aria-hidden="false"] .prism-lightbox__panel{
+  transform: translateY(0) scale(1);
+}
+
+.prism-lightbox__figure{
+  width: 100%;
+  margin: 0;
+  display: grid;
+  gap: .8rem;
+  align-items: center;
+}
+
+.prism-lightbox__title{
+  color: #fff;
+  margin: 0;
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  letter-spacing: -0.01em;
+}
+
+.prism-lightbox__img{
+  width: 100%;
+  height: auto;
+  max-height: 64vh;
+  object-fit: contain;
+  border-radius: 14px;
+  background: rgba(255,255,255,.03);
+
+  opacity: 1;
+  transition: opacity 180ms ease;
+}
+
+/* Image switching fade */
+.prism-lightbox__img.is-fading{
+  opacity: .15;
+}
+
+.prism-lightbox__caption{
+  color: rgba(255,255,255,.75);
+  margin: 0;
+}
+
+.prism-lightbox__close{
+  position: absolute;
+  top: .65rem;
+  right: .65rem;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  cursor: pointer;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 1.6rem;
+  line-height: 1;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+.prism-lightbox__close:hover{
+  background: rgba(255,255,255,.12);
+  border-color: rgba(255, 255, 255, 0.514);
+  transform: translateY(-1px);
+}
+
+.prism-lightbox__nav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  cursor: pointer;
+  font-size: 1.9rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    transform 200ms ease;
+}
+
+.prism-lightbox__nav:hover{
+  background: rgba(255,255,255,.12);
+  border-color: rgba(255,255,255,.30);
+  transform: translateY(-50%) scale(1.03);
+}
+
+.prism-lightbox__nav--prev{ left: .8rem; }
+.prism-lightbox__nav--next{ right: .8rem; }
+
+/* Ensure mobile usability */
+@media (max-width: 520px){
+  .prism-lightbox__panel{
+    padding: .85rem;
+    border-radius: 14px;
+  }
+
+  .prism-lightbox__nav{ display: grid; }
+  .prism-lightbox__nav--prev{ left: .4rem; }
+  .prism-lightbox__nav--next{ right: .4rem; }
+
+
+  .prism-lightbox__img{
+    max-height: 62vh;
+  }
+}
+
+
+

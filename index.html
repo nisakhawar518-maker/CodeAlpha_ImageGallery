@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Prism — A curated visual experience." />
+  <title>Prism — Image Gallery</title>
+
+  <!-- Font pairing (Google Fonts) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#gallery">Skip to gallery</a>
+
+  <header class="site-header" role="banner">
+    <div class="container header-inner">
+      <div class="header-flex" role="navigation" aria-label="Primary navigation">
+        <a class="brand" href="#home" aria-label="Prism home">
+          <div class="brand-mark" aria-hidden="true">◈</div>
+          <div class="brand-text">
+            <h1 class="brand-title">Prism</h1>
+            <p class="brand-tagline">Prism — A curated visual experience</p>
+          </div>
+        </a>
+
+        <nav class="site-nav" aria-label="Site">
+          <a class="nav-link" href="#home">Home</a>
+          <a class="nav-link" href="#gallery">Gallery</a>
+          <a class="nav-link" href="#about">About</a>
+        </nav>
+
+        <button class="nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="mobile-nav">
+          <span aria-hidden="true">☰</span>
+        </button>
+      </div>
+
+      <div id="mobile-nav" class="mobile-nav" aria-hidden="true">
+        <a class="nav-link" href="#home">Home</a>
+        <a class="nav-link" href="#gallery">Gallery</a>
+        <a class="nav-link" href="#about">About</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main" role="main">
+    <section id="home" class="prism-hero" aria-labelledby="prism-hero-title">
+      <div class="container prism-hero__inner">
+        <div class="prism-hero__media reveal" aria-hidden="false">
+          <figure class="prism-hero__figure">
+            <img
+              id="prism-hero-featured-img"
+              class="prism-hero__img"
+              src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80"
+              width="1200"
+              height="900"
+              alt="Featured photography"
+              loading="eager"
+              decoding="async"
+            />
+            <figcaption class="prism-hero__caption" id="prism-hero-featured-caption">Featured photography</figcaption>
+          </figure>
+        </div>
+
+        <div class="prism-hero__content reveal">
+          <div class="prism-hero__eyebrow">Curated by Prism</div>
+          <h2 class="prism-hero__title" id="prism-hero-title">Discover Inspiring Photography</h2>
+          <p class="prism-hero__desc">Explore a premium selection of imagery—filter by category, search instantly, and open any photo in a sleek lightbox experience.</p>
+
+          <div class="prism-hero__search" role="search" aria-label="Search gallery">
+            <label class="sr-only" for="prism-hero-search">Search photos</label>
+            <input
+              id="prism-hero-search"
+              class="prism-search"
+              type="search"
+              placeholder="Search in gallery…"
+              autocomplete="off"
+              inputmode="search"
+            />
+            <button class="prism-search__btn" type="button" id="prism-search-clear" aria-label="Clear search">×</button>
+          </div>
+
+          <div class="prism-hero__cta">
+            <a class="prism-btn prism-btn--primary" href="#gallery" data-scroll-to-gallery>
+              Explore Gallery
+            </a>
+          </div>
+
+          <dl class="prism-stats" aria-label="Gallery statistics">
+            <div class="prism-stat">
+              <dt class="prism-stat__label">Total Images</dt>
+              <dd class="prism-stat__value" id="prism-stat-total">—</dd>
+            </div>
+            <div class="prism-stat">
+              <dt class="prism-stat__label">Categories</dt>
+              <dd class="prism-stat__value" id="prism-stat-categories">—</dd>
+            </div>
+            <div class="prism-stat">
+              <dt class="prism-stat__label">API Source</dt>
+              <dd class="prism-stat__value" id="prism-stat-source">Unsplash</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="prism-about" aria-labelledby="about-title">
+      <div class="container prism-about__inner">
+        <h3 id="about-title" class="prism-about__title">About Prism</h3>
+        <p class="prism-about__text">Prism is a modern gallery interface designed for smooth browsing—built with vanilla JavaScript, real-time search, and a production-grade loading and error flow.</p>
+      </div>
+    </section>
+
+    <section class="gallery" aria-labelledby="gallery-title">
+      <div class="container">
+        <header class="gallery-header">
+          <h2 id="gallery-title" class="gallery-title">Featured thumbnails</h2>
+          <p class="gallery-subtitle">A responsive grid of curated visuals—hover to feel the motion.</p>
+        </header>
+
+
+        <!-- Category Filters (new) -->
+        <div class="prism-filters" role="toolbar" aria-label="Filter images by category">
+          <button type="button" class="prism-filter" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" class="prism-filter" data-filter="nature" aria-pressed="false">Nature</button>
+          <button type="button" class="prism-filter" data-filter="city" aria-pressed="false">City</button>
+          <button type="button" class="prism-filter" data-filter="people" aria-pressed="false">People</button>
+        </div>
+
+
+        <div id="gallery" class="thumb-grid" role="list" aria-label="Image gallery thumbnails">
+
+          <div id="prism-loading" class="prism-status" role="status" aria-live="polite" hidden>
+
+            <div class="prism-spinner" aria-hidden="true"></div>
+            <p class="prism-status-text">Loading images…</p>
+          </div>
+          <div id="prism-error" class="prism-status prism-status--error" role="alert" aria-live="assertive" hidden></div>
+          <!-- Cards (no lightbox/modal/navigation in this step) -->
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:0">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/1011/900/650"
+                width="900" height="650"
+                alt="Lake canoe"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Lake canoe</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="people" style="--prism-index:1">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/1025/900/650"
+                width="900" height="650"
+                alt="Cozy pup"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Cozy pup</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:2">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/1035/900/650"
+                width="900" height="650"
+                alt="Waterfall rainbow"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Waterfall rainbow</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:3">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/1043/900/650"
+                width="900" height="650"
+                alt="Yosemite valley"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Yosemite valley</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:4">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/1050/900/650"
+                width="900" height="650"
+                alt="Coastal cliffs"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Coastal cliffs</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="people" style="--prism-index:5">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/1062/900/650"
+                width="900" height="650"
+                alt="Wrapped in a blanket"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Wrapped in a blanket</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:6">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/1074/900/650"
+                width="900" height="650"
+                alt="Wildlife portrait"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Wildlife portrait</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:7">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/1084/900/650"
+                width="900" height="650"
+                alt="Walruses resting"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Walruses resting</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:8">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/109/900/650"
+                width="900" height="650"
+                alt="Golden wheat field"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Golden wheat field</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:9">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/110/900/650"
+                width="900" height="650"
+                alt="Sunset over the field"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Sunset over the field</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="city" style="--prism-index:10">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/111/900/650"
+                width="900" height="650"
+                alt="Vintage car"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Vintage car</span>
+              </figcaption>
+            </figure>
+          </article>
+
+
+          <article class="thumb-card" role="listitem" data-prism-item data-category="nature" style="--prism-index:11">
+            <figure class="thumb-figure">
+              <img
+                class="thumb-img"
+                src="https://picsum.photos/id/112/900/650"
+                width="900" height="650"
+                alt="Golden grass field"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption class="thumb-overlay" aria-hidden="true">
+                <span class="thumb-label">Golden grass field</span>
+              </figcaption>
+            </figure>
+          </article>
+
+        </div>
+
+        <!-- Load More (NEW) -->
+        <div class="prism-loadmore-wrap">
+          <button
+            id="prism-load-more"
+            class="prism-loadmore"
+            type="button"
+          >
+            Load more
+          </button>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+
+  <footer class="site-footer" role="contentinfo">
+    <div class="container footer-inner">
+      <p class="footer-text">© 2026 Prism. Built by Nisa Khawar.</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox Modal (new) -->
+  <div id="prism-lightbox" class="prism-lightbox" aria-hidden="true">
+    <div class="prism-lightbox__overlay" data-lightbox-overlay tabindex="-1" aria-hidden="true"></div>
+
+    <div class="prism-lightbox__panel" role="dialog" aria-modal="true" aria-labelledby="prism-lightbox-title" data-lightbox-panel>
+      <button type="button" class="prism-lightbox__close" data-lightbox-close aria-label="Close lightbox">
+        <span aria-hidden="true">×</span>
+      </button>
+
+      <button type="button" class="prism-lightbox__nav prism-lightbox__nav--prev" data-lightbox-prev aria-label="Previous image">
+        ‹
+      </button>
+      <button type="button" class="prism-lightbox__nav prism-lightbox__nav--next" data-lightbox-next aria-label="Next image">
+        ›
+      </button>
+
+      <figure class="prism-lightbox__figure">
+        <h3 id="prism-lightbox-title" class="prism-lightbox__title">Prism image</h3>
+        <img class="prism-lightbox__img" data-lightbox-image src="" alt="" decoding="async" />
+        <figcaption class="prism-lightbox__caption" data-lightbox-caption></figcaption>
+      </figure>
+    </div>
+  </div>
+
+  <script type="module" src="config.js" defer></script>
+  <script type="module" src="script.js" defer></script>
+</body>
+</html>
+
+
