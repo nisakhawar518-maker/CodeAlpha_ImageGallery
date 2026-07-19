@@ -179,19 +179,22 @@ import { UNSPLASH_ACCESS_KEY } from './config.js';
   }
 
   function getVisibleItems() {
+    // Always get the current/fresh list of items (important: cards are dynamically added/removed).
+    const currentItems = $$('[data-prism-item]');
+
     // Includes both category + hero search query.
     const q = activeSearchQuery.trim().toLowerCase();
 
     if (activeCategory === 'all') {
-      if (!q) return items;
-      return items.filter((it) => {
+      if (!q) return currentItems;
+      return currentItems.filter((it) => {
         const cap = $('.thumb-label', it)?.textContent?.trim().toLowerCase() || '';
         return cap.includes(q);
       });
     }
 
     // Category filter active
-    const base = items.filter((it) => it.dataset.category === activeCategory);
+    const base = currentItems.filter((it) => it.dataset.category === activeCategory);
     if (!q) return base;
 
     return base.filter((it) => {
@@ -805,7 +808,8 @@ import { UNSPLASH_ACCESS_KEY } from './config.js';
     const visibleSetSet = new Set(visibleSet);
 
     // Smooth fade: fade out non-matching, fade in matching.
-    for (const it of items) {
+   const currentItems = $$('[data-prism-item]');
+    for (const it of currentItems) {
       const shouldShow = visibleSetSet.has(it);
 
       if (shouldShow) {
