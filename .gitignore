@@ -1,5 +1,4 @@
 # Ignore local configuration with API keys
-config.js
 
 # Node modules (if you ever add node tooling)
 node_modules/
